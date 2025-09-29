@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Jogo de Luta Element Crash</title>
+<style>
+  * { margin:0; padding:0; box-sizing: border-box; }
+
+body {
+  background: #222;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Fundo de cena com imagem de fundo (pode trocar) */
+#fundo {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.4&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  filter: brightness(0.6);
+}
+
+/* HUD de vidas e timer */
+#hud {
+  position: fixed;
+  top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  color: #fff;
+  font-size: 1.2em;
+  z-index: 10;
+}
+
+#vida1, #vida2 {
+  width: 150px; height: 20px; background: red; border: 2px solid #fff; border-radius: 10px; overflow: hidden; margin: 5px;
+}
+
+#vida1 div, #vida2 div {
+  height: 100%; background: green; width: 100%; transition: width 0.3s;
+}
+
+#tempo {
+  font-size: 2em; margin-top: 5px;
+}
+
+/* Container dos personagens */
+#cenario {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding-bottom: 20px;
+}
+
+/* Personagem estilo sprite */
+.personagem {
+  position: absolute;
+  bottom: 0;
+  width: 80px;
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Posicionamento inicial */
+#player1 { left: 150px; }
+#player2 { right: 150px; }
+
+/* Estilo para animações de ataque */
+.ataque {
+  animation: golpe 0.3s forwards;
+}
+
+@keyframes golpe {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(20px); }
+  100% { transform: translateX(0); }
+}
+
+/* Efeito de golpe visual */
+.golpeVisual {
+  position: absolute;
+  width: 30px; height: 30px;
+  background: yellow;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: efeitoGolpe 0.3s forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+
+@keyframes efeitoGolpe {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div id="fundo"></div>
+
+<!-- HUD -->
+<div id="hud">
+  <div>
+    <div>Player 1</div>
+    <div id="vida1"><div></div></div>
+  </div>
+  <div>
+    <div id="tempo">90</div>
+  </div>
+  <div>
+    <div>Player 2</div>
+    <div id="vida2"><div></div></div>
+  </div>
+</div>
+
+<!-- Cena -->
+<div id="cenario">
+  <div id="player1" class="personagem" style="background-image: url('https://i.imgur.com/4f6kQXk.png');"></div>
+  <div id="player2" class="personagem" style="background-image: url('https://i.imgur.com/7M3W7WZ.png');"></div>
+</div>
+
+<script>
+const vidaMax = 100;
+let vida1 = vidaMax;
+let vida2 = vidaMax;
+let tempo = 90;
+
+// Referências
+const p1 = document.getElementById('player1');
+const p2 = document.getElementById('player2');
+
+const vidaBar1 = document.querySelector('#vida1 div');
+const vidaBar2 = document.querySelector('#vida2 div');
+
+const tempoDisplay = document.getElementById('tempo');
+
+const cena = document.getElementById('cenario');
+
+// Posições iniciais
+let p1Pos = { x: 150, y: 0 };
+let p2Pos = { x: window.innerWidth - 230, y: 0 };
+
+// Estados
+const keys = {
+  p1: { left:false, right:false, up:false, attack:false },
+  p2: { left:false, right:false, up:false, attack:false }
+};
+
+// Movimentos
+function moveCharacters() {
+  // Player 1
+  if (keys.p1.left) p1Pos.x -= 5;
+  if (keys.p1.right) p1Pos.x += 5;
+  // Player 2
+  if (keys.p2.left) p2Pos.x -= 5;
+  if (keys.p2.right) p2Pos.x += 5;
+
+  // Limites
+  p1Pos.x = Math.max(0, Math.min(window.innerWidth/2 - 80, p1Pos.x));
+  p2Pos.x = Math.max(window.innerWidth/2, Math.min(window.innerWidth - 80, p2Pos.x));
+
+  p1.style.left = p1Pos.x + 'px';
+  p2.style.left = p2Pos.x + 'px';
+}
+setInterval(moveCharacters, 20);
+
+// Controles Player 1 (W,A,S,D, F)
+document.addEventListener('keydown', e => {
+  switch(e.key) {
+    case 'a': keys.p1.left=true; break;
+    case 'd': keys.p1.right=true; break;
+    case 'w': keys.p1.up=true; break; // pode usar para pular futuramente
+    case 'f': ataque('p1'); break;
+  }
+});
+document.addEventListener('keyup', e => {
+  switch(e.key) {
+    case 'a': keys.p1.left=false; break;
+    case 'd': keys.p1.right=false; break;
+  }
+});
+
+// Controles Player 2 (Setas, Enter)
+document.addEventListener('keydown', e => {
+  switch(e.key) {
+    case 'ArrowLeft': keys.p2.left=true; break;
+    case 'ArrowRight': keys.p2.right=true; break;
+    case 'ArrowDown': /* pode usar para defesa futuramente */ break;
+    case 'Enter': ataque('p2'); break;
+  }
+});
+document.addEventListener('keyup', e => {
+  switch(e.key) {
+    case 'ArrowLeft': keys.p2.left=false; break;
+    case 'ArrowRight': keys.p2.right=false; break;
+  }
+});
+
+// Função ataque
+function ataque(jogador) {
+  const inimigo = jogador==='p1' ? p2 : p1;
+  const pJogador = document.querySelector(`#${jogador}`);
+  const pInimigo = document.querySelector(`#${jogador==='p1'?'p2':'p1'}`);
+
+  // Verifica distância
+  const dist = Math.abs(p1Pos.x - p2Pos.x);
+  if (dist < 120) { // alcance do golpe
+    // Animação de ataque
+    pJogador.classList.add('ataque');
+    setTimeout(() => pJogador.classList.remove('ataque'), 300);
+
+    // Criar efeito visual de golpe
+    criarEfeitoGolpe(pInimigo);
+
+    // Reduzir vida
+    if (jogador==='p1') {
+      vida2 -= Math.random() * 15 + 10; 
+      if (vida2 < 0) vida2=0;
+      vidaBar2.style.width = vida2 + '%';
+    } else {
+      vida1 -= Math.random() * 15 + 10; 
+      if (vida1 < 0) vida1=0;
+      vidaBar1.style.width = vida1 + '%';
+    }
+    verificarVencedor();
+  }
+}
+
+// Função efeito visual
+function criarEfeitoGolpe(inimigoDiv) {
+  const efeito = document.createElement('div');
+  efeito.className='golpeVisual';
+  const rect = inimigoDiv.getBoundingClientRect();
+  efeito.style.left = rect.left + rect.width/2 + 'px';
+  efeito.style.top = rect.top + 'px';
+  document.body.appendChild(efeito);
+  setTimeout(() => efeito.remove(), 300);
+}
+
+// Verifica vencedor
+function verificarVencedor() {
+  if (vida1<=0 || vida2<=0) {
+    alert(vida1>0?'Player 1 venceu!':'Player 2 venceu!');
+    // Restart
+    vida1=vidaMax; vida2=vidaMax;
+    vidaBar1.style.width='100%'; vidaBar2.style.width='100%';
+  }
+}
+
+// Timer
+const timerInterval = setInterval(() => {
+  if (tempo<=0) {
+    alert('Tempo esgotado!');
+    clearInterval(timerInterval);
+  } else {
+    tempo--;
+    tempoDisplay.innerText=tempo;
+  }
+}, 1000);
+
+// Inicializa posições
+p1.style.left = p1Pos.x + 'px';
+p2.style.left = p2Pos.x + 'px';
+
+</script>
+
+</body>
+</html>

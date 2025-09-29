@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Seleção de Personagem</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #222; color: #fff; text-align: center; }
+  .personagens { display: flex; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .personagem { margin: 10px; padding: 10px; border: 2px solid #fff; cursor: pointer; }
+  .selected { border-color: yellow; }
+  button { padding: 15px 30px; font-size: 1.2em; margin-top: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Escolha seus personagens</h1>
+<p>Escolha o personagem para o Player 1 e Player 2 (ou Robô)</p>
+<div>
+  <div id="player1" class="personagens">
+    <div class="personagem" data-personagem="lutador1">Lutador 1</div>
+    <div class="personagem" data-personagem="lutador2">Lutador 2</div>
+  </div>
+</div>
+<div>
+  <div id="player2" class="personagens">
+    <div class="personagem" data-personagem="lutador1">Lutador 1</div>
+    <div class="personagem" data-personagem="lutador2">Lutador 2</div>
+  </div>
+</div>
+<button onclick="startGame()">Começar o Jogo</button>
+
+<script>
+  let selectedP1 = null;
+  let selectedP2 = null;
+
+  document.querySelectorAll('#player1 .personagem').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('#player1 .personagem').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedP1 = el.dataset.personagem;
+    };
+  });
+  document.querySelectorAll('#player2 .personagem').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('#player2 .personagem').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedP2 = el.dataset.personagem;
+    };
+  });
+
+  function startGame() {
+    if (selectedP1 && selectedP2) {
+      localStorage.setItem('player1', selectedP1);
+      localStorage.setItem('player2', selectedP2);
+      // Aqui, você pode passar o modo também, se necessário
+      window.location.href = 'luta.html';
+    } else {
+      alert('Selecione personagens para ambos os jogadores.');
+    }
+  }
+</script>
+</body>
+</html>

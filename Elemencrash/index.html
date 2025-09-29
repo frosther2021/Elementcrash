@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Element Crash - Menu</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298); /* fundo atraente */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    color: #fff;
+  }
+
+  /* Logo ou imagem de início */
+  #logo {
+    width: 300px;
+    max-width: 80%;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px #000;
+  }
+
+  button {
+    padding: 20px 40px;
+    margin: 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff6f61; /* cor atraente */
+    color: #fff;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #ff3b2e;
+    transform: scale(1.05);
+  }
+
+  /* Estilo para o botão selecionado */
+  .selecionado {
+    animation: piscar 1s infinite;
+    outline: 3px solid #fff; /* destaque extra */
+  }
+
+  @keyframes piscar {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Imagem de início (substitua pelo caminho da sua imagem) -->
+<img id="logo" src="fotos/menu.jpg" alt="fundo" />
+
+<h1>Element Crash</h1>
+
+<!-- Botões de modo -->
+<button id="modo1v1" onclick="selecionarModo('1v1')">1v1</button>
+<button id="modo1v2" onclick="selecionarModo('1v2')">1v2</button>
+<button id="modoRobo" onclick="selecionarModo('robo')">1vRobo</button>
+
+<script>
+  let modoSelecionado = null;
+  const botoes = document.querySelectorAll('button');
+
+  function selecionarModo(modo) {
+    modoSelecionado = modo;
+
+    // Remove efeito de piscar de todos
+    botoes.forEach(btn => btn.classList.remove('selecionado'));
+
+    // Adiciona efeito de piscar ao botão selecionado
+    if (modo === '1v1') document.getElementById('modo1v1').classList.add('selecionado');
+    if (modo === '1v2') document.getElementById('modo1v2').classList.add('selecionado');
+    if (modo === 'robo') document.getElementById('modoRobo').classList.add('selecionado');
+  }
+
+  // Quando clicar no botão "Começar", redirecionar para a próxima página
+  // Você pode criar um botão "Iniciar" ou usar evento para avançar
+  // Aqui, vou adicionar um botão de iniciar
+</script>
+
+<!-- Botão para iniciar o jogo -->
+<button onclick="iniciarJogo()">Iniciar Jogo</button>
+
+<script>
+  function iniciarJogo() {
+    if (!modoSelecionado) {
+      alert('Por favor, selecione um modo!');
+      return;
+    }
+    // Aqui, você pode passar o modo na URL
+    window.location.href = 'selecionar_personagem.html?modo=' + modoSelecionado;
+  }
+</script>
+
+</body>
+</html>
