@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Element Crash - Seleção de Personagens</title>
+<!-- Fonte estilo arcade/mortal kombat -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+<style>
+  body {
+    background-color: #000;
+    font-family: 'Press Start 2P', cursive;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    text-align: center;
+    padding: 20px;
+    font-size: 2em;
+    text-shadow: 2px 2px 4px #f00;
+  }
+
+  /* Container principal com estilo de tela de luta */
+  .container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+  }
+
+  /* Área de seleção de personagens */
+  .characters, .scenarios {
+    border: 4px solid #f00;
+    padding: 10px;
+    width: 30%;
+    background: rgba(0,0,0,0.7);
+    border-radius: 10px;
+    box-shadow: 0 0 20px #f00;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+
+  /* Lista de itens (personagens ou cenários) */
+  .item-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .item {
+    margin: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 5px;
+    transition: all 0.3s;
+  }
+
+  .item:hover {
+    border-color: #f00;
+    transform: scale(1.05);
+  }
+
+  /* Imagens dos itens */
+  .item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    display: block;
+  }
+
+  /* Visualização do personagem e cenário selecionados */
+  .preview {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .preview img {
+    width: 200px;
+    border: 3px solid #f00;
+    border-radius: 10px;
+    margin: 10px;
+  }
+
+  /* Botões de ação com estilo de luta */
+  .actions {
+    text-align: center;
+    margin: 20px;
+  }
+
+  button {
+    background: #f00;
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    margin: 0 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #f00, 0 0 20px #f00 inset;
+    transition: all 0.3s;
+  }
+
+  button:hover {
+    background: #fff;
+    color: #f00;
+    box-shadow: 0 0 20px #fff, 0 0 30px #f00 inset;
+  }
+</style>
+</head>
+<body>
+
+<header>SELEÇÃO DE PERSONAGENS</header>
+
+<div class="container">
+  <!-- Área de Personagens -->
+  <div class="characters">
+    <h2>Personagens</h2>
+    <div class="item-list" id="characterList">
+      <!-- Personagens - substitua as imagens pelos seus personagens ou use links próprios -->
+      <div class="item" data-name="Sub-Gelo" data-img="">
+        <img src="fotos/Frostclaw.jpg" alt="Sub-Gelo" />
+      </div>
+      <div class="item" data-name="Scorpion" data-img="">
+        <img src="fotos/Kazan.jpg" alt="Scorpion" />
+      </div>
+      <div class="item" data-name="Raiden" data-img="">
+        <img src="fotos/Psyra.jpg" alt="Raiden" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Área de Cenários -->
+  <div class="scenarios">
+    <h2>Cenários</h2>
+    <div class="item-list" id="scenarioList">
+      <!-- Cenários - substitua as imagens pelos seus cenários ou links próprios -->
+      <div class="item" data-name="Templo" data-img="">
+        <img src="fotos/Templo das Almas.jpg" alt="Templo" />
+      </div>
+      <div class="item" data-name="Fogo" data-img="">
+        <img src="fotos/Arena do Submundo.jpg" alt="Fogo" />
+      </div>
+      <div class="item" data-name="Frost" data-img="">
+        <img src="fotos/Fortaleza do Gelo Eterno.jpg" alt="Frost" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Área de visualização do personagem e cenário -->
+<div class="preview" id="previewArea">
+  <h2>Personagem e Cenário Selecionados</h2>
+  <img id="selectedCharacter" src="" alt="Personagem Selecionado" />
+  <img id="selectedScenario" src="" alt="Cenário Selecionado" />
+</div>
+
+<!-- Botões de ação -->
+<div class="actions">
+  <button onclick="startFight()">LUTAR!</button>
+  <button onclick="resetSelection()">RESETAR</button>
+</div>
+
+<script>
+  // Variáveis de armazenamento
+  let personagemSelecionado = null;
+  letcenarioSelecionado = null;
+
+  // Seleção de personagem
+  document.querySelectorAll('#characterList .item').forEach(item => {
+    item.onclick = () => {
+      personagemSelecionado = {
+        nome: item.dataset.name,
+        img: item.dataset.img
+      };
+      document.getElementById('selectedCharacter').src = personagemSelecionado.img;
+    };
+  });
+
+  // Seleção de cenário
+  document.querySelectorAll('#scenarioList .item').forEach(item => {
+    item.onclick = () => {
+      scenarioSelecionado = {
+        nome: item.dataset.name,
+        img: item.dataset.img
+      };
+      document.getElementById('selectedScenario').src = scenarioSelecionado.img;
+    };
+  });
+
+  function startFight() {
+    if (!personagemSelecionado || !scenarioSelecionado) {
+      alert('Selecione um personagem e um cenário!');
+      return;
+    }
+    alert(`Preparado para lutar! Personagem: ${personagemSelecionado.nome} no cenário: ${scenarioSelecionado.nome}`);
+    // Aqui você pode avançar para o jogo ou iniciar a luta
+  }
+
+  function resetSelection() {
+    personagemSelecionado = null;
+    scenarioSelecionado = null;
+    document.getElementById('selectedCharacter').src = '';
+    document.getElementById('selectedScenario').src = '';
+  }
+</script>
+
+</body>
+</html>
